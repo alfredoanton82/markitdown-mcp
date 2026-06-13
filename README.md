@@ -1,45 +1,118 @@
 # markitdown-mcp
 
-MCP server that converts documents to Markdown and stores them locally.
+MCP server that converts documents to Markdown. Stateless — no database, no storage.
 
-## Tools
+## Tool
 
-| Tool | Description |
-|------|-------------|
-| `process_document` | Convert a file to Markdown. Supports PDF, DOCX, XLSX, PPTX, HTML, TXT, MD |
-| `get_markdown` | Retrieve stored Markdown by `file_id` |
-| `list_documents` | List processed documents |
-| `search_summaries` | Keyword search across stored Markdown content |
-| `get_summary` | Metadata for a processed document |
+### `process_document`
 
-## Requirements
+Converts a local file to Markdown and returns the content directly.
 
-- Python 3.11+
-- Dependencies in `requirements.txt`
+**Input**
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `file_path` | string | yes | Absolute path to the file |
+
+**Output**
+
+```json
+{
+  "filename": "report.pdf",
+  "markdown": "# Report\n...",
+  "markdown_size_bytes": 4821
+}
+```
+
+**Supported formats:** PDF, DOCX, XLSX, PPTX, HTML, TXT, MD
+
+---
 
 ## Installation
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/alfredoanton82/markitdown-mcp.git ~/.claude/skills/markitdown-mcp
+cd ~/.claude/skills/markitdown-mcp
+```
+
+### 2. Create the virtual environment and install dependencies
 
 ```bash
 bash setup.sh
 ```
 
-## Structure
+---
 
+## Add to Claude Code
+
+Add this block to `~/.claude/.mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "markitdown": {
+      "command": "/Users/<your-user>/.claude/skills/markitdown-mcp/venv/bin/python",
+      "args": ["/Users/<your-user>/.claude/skills/markitdown-mcp/mcp_server.py"],
+      "type": "stdio"
+    }
+  }
+}
 ```
-markitdown-mcp/
-├── mcp_server.py       # MCP server (stdio)
-├── src/
-│   ├── converters.py   # Conversion with markitdown
-│   ├── database.py     # SQLite (SQLAlchemy)
-│   ├── models.py       # ORM models
-│   ├── schemas.py      # Pydantic schemas
-│   └── tools.py        # Tool implementations
-├── requirements.txt
-└── setup.sh
+
+**Windows paths:**
+
+```json
+{
+  "mcpServers": {
+    "markitdown": {
+      "command": "C:\\Users\\<your-user>\\.claude\\skills\\markitdown-mcp\\venv\\Scripts\\python.exe",
+      "args": ["C:\\Users\\<your-user>\\.claude\\skills\\markitdown-mcp\\mcp_server.py"],
+      "type": "stdio"
+    }
+  }
+}
 ```
 
-## Cache
+---
 
-The server calculates an MD5 hash of each file. If the same file is processed twice, it returns the cached result without reprocessing.
+## Add to Claude Desktop
 
-Markdown files are stored in `~/.claude/skills/markitdown-mcp/data/cache/`.
+Edit the Claude Desktop config file:
+
+- **macOS:** `~/Library/Application Support/Claude/claude_desktop_config.json`
+- **Windows:** `%APPDATA%\Claude\claude_desktop_config.json`
+
+```json
+{
+  "mcpServers": {
+    "markitdown": {
+      "command": "/Users/<your-user>/.claude/skills/markitdown-mcp/venv/bin/python",
+      "args": ["/Users/<your-user>/.claude/skills/markitdown-mcp/mcp_server.py"]
+    }
+  }
+}
+```
+
+**Windows:**
+
+```json
+{
+  "mcpServers": {
+    "markitdown": {
+      "command": "C:\\Users\\<your-user>\\.claude\\skills\\markitdown-mcp\\venv\\Scripts\\python.exe",
+      "args": ["C:\\Users\\<your-user>\\.claude\\skills\\markitdown-mcp\\mcp_server.py"]
+    }
+  }
+}
+```
+
+Restart Claude Desktop after editing the config.
+
+---
+
+## Requirements
+
+- Python 3.10+
+- No API keys or credentials needed

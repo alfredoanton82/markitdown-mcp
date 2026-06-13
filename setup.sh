@@ -12,7 +12,4 @@ echo "Installing dependencies..."
 pip install --upgrade pip
 pip install -r requirements.txt
 
-echo "Initializing database..."
-python -c "from src.database import init_db; init_db(); print('DB ready')"
-
 echo "Done. Run: python mcp_server.py"
